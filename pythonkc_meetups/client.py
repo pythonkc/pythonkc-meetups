@@ -49,17 +49,53 @@ class PythonKCMeetups(object):
 
     def get_upcoming_events(self):
         """
-        Get the upcoming PythonKC meetup events.
+        Get upcoming PythonKC meetup events.
 
         Returns
         -------
         List of ``pythonkc_meetups.types.MeetupEvent``, ordered by event time,
         ascending.
 
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
         """
 
         query = urllib.urlencode({'key': self._api_key,
                                   'group_urlname': GROUP_URLNAME})
+        url = '{0}?{1}'.format(EVENTS_URL, query)
+        data = self._http_get_json(url)
+        events = data['results']
+        return [parse_event(event) for event in events]
+
+    def get_past_events(self):
+        """
+        Get past PythonKC meetup events.
+
+        Returns
+        -------
+        List of ``pythonkc_meetups.types.MeetupEvent``, ordered by event time,
+        descending.
+
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
+        """
+
+        query = urllib.urlencode({'key': self._api_key,
+                                  'group_urlname': GROUP_URLNAME,
+                                  'status': 'past',
+                                  'desc': 'true'})
         url = '{0}?{1}'.format(EVENTS_URL, query)
         data = self._http_get_json(url)
         events = data['results']
@@ -82,10 +118,10 @@ class PythonKCMeetups(object):
         Exceptions
         ----------
         * PythonKCMeetupsBadJson
-        * PythonKCMeetupsNotJson
-        * PythonKCMeetupsMeetupDown
-        * PythonKCMeetupsRateLimitExceeded
         * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
 
         """
         response, content = self._http_get(url)
@@ -117,9 +153,9 @@ class PythonKCMeetups(object):
 
         Exceptions
         ----------
+        * PythonKCMeetupsBadResponse
         * PythonKCMeetupsMeetupDown
         * PythonKCMeetupsRateLimitExceeded
-        * PythonKCMeetupsBadResponse
 
         """
         for try_number in range(self._http_retries + 1):

@@ -22,3 +22,8 @@ Example Usage
     9
     >>> next_meetup.event_url
     u'http://www.meetup.com/pythonkc/events/25940081/'
+    >>> last_meetup = meetups.get_past_events()[0]
+    >>> last_meetup.name
+    u'Monthly Meetup: Google App Engine'
+    >>> last_meetup.time
+    datetime.datetime(2011, 7, 9, 14, 0, tzinfo=tzoffset(None, -18000))
