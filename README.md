@@ -1,0 +1,24 @@
+PythonKC Meetup.com API Client
+==============================
+
+A clean, minimal client to the Meetup.com API for retrieving Meetup events for
+the [PythonKC group](http://www.meetup.com/pythonkc/).
+
+Example Usage
+-------------
+
+    >>> from pythonkc_meetups import PythonKCMeetups
+    >>> meetups = PythonKCMeetups(api_key='<your API key here>')
+    >>> next_meetup = meetups.get_upcoming_events()[0]
+    >>> next_meetup.name
+    u'Hackathon!'
+    >>> next_meetup.time
+    datetime.datetime(2011, 8, 13, 10, 0, tzinfo=tzoffset(None, -18000))
+    >>> next_meetup.venue.name
+    u"Salva O'Renick"
+    >>> next_meetup.venue.lat, next_meetup.venue.lon
+    (39.091053, -94.576996)
+    >>> next_meetup.yes_rsvp_count
+    9
+    >>> next_meetup.event_url
+    u'http://www.meetup.com/pythonkc/events/25940081/'
