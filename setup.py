@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-# http://packages.python.org/distribute/setuptools.html#using-setuptools-without-bundling-it
-import distribute_setup
-distribute_setup.use_setuptools()
-
-
 from setuptools import find_packages
 from setuptools import setup
 
