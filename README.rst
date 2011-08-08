@@ -7,6 +7,8 @@ the [PythonKC group](http://www.meetup.com/pythonkc/).
 Example Usage
 -------------
 
+::
+
     >>> from pythonkc_meetups import PythonKCMeetups
     >>> meetups = PythonKCMeetups(api_key='<your API key here>')
     >>> next_meetup = meetups.get_upcoming_events()[0]
