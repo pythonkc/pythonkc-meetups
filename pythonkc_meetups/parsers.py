@@ -9,6 +9,8 @@ returned by the PythonKC meetup client.
 from dateutil.tz import tzoffset
 from dateutil.tz import tzutc
 from pythonkc_meetups.types import MeetupEvent
+from pythonkc_meetups.types import MeetupMember
+from pythonkc_meetups.types import MeetupMemberPhoto
 from pythonkc_meetups.types import MeetupVenue
 import datetime
 
@@ -60,6 +62,41 @@ def parse_venue(data):
             country=data.get('country', None),
             lat=data.get('lat', None),
             lon=data.get('lon', None)
+        )
+
+
+def parse_member_from_rsvp(data):
+    """
+    Parse a ``MeetupMember`` from the given RSVP response data.
+
+    Returns
+    -------
+    A ``pythonkc_meetups.types.MeetupMember``.
+
+    """
+    return MeetupMember(
+        id=data['member'].get('member_id', None),
+        name=data['member'].get('name', None),
+        photo=parse_member_photo(data.get('member_photo', None))
+    )
+
+
+def parse_member_photo(data):
+    """
+    Parse a ``MeetupMemberPhoto`` from the given response data.
+
+    Returns
+    -------
+    A `pythonkc_meetups.types.`MeetupMemberPhoto`` if non-empty data is given,
+    otherwise ``None``.
+
+    """
+    if data:
+        return MeetupMemberPhoto(
+            id=data.get('id', None),
+            url=data.get('photo_link', None),
+            highres_url=data.get('highres_link', None),
+            thumb_url=data.get('thumb_link', None)
         )
 
 

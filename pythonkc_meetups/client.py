@@ -11,13 +11,16 @@ from pythonkc_meetups.exceptions import PythonKCMeetupsMeetupDown
 from pythonkc_meetups.exceptions import PythonKCMeetupsNotJson
 from pythonkc_meetups.exceptions import PythonKCMeetupsRateLimitExceeded
 from pythonkc_meetups.parsers import parse_event
+from pythonkc_meetups.parsers import parse_member_from_rsvp
 import httplib2
 import json
 import mimeparse
 import urllib
 
 
-EVENTS_URL = 'https://api.meetup.com/2/events.json'
+MEETUP_API_HOST = 'https://api.meetup.com'
+EVENTS_URL = MEETUP_API_HOST + '/2/events.json'
+RSVPS_URL = MEETUP_API_HOST + '/2/rsvps.json'
 GROUP_URLNAME = 'pythonkc'
 
 
@@ -100,6 +103,35 @@ class PythonKCMeetups(object):
         data = self._http_get_json(url)
         events = data['results']
         return [parse_event(event) for event in events]
+
+    def get_event_attendees(self, event_id):
+        """
+        Get the attendees of the identified event.
+
+        Parameters
+        ----------
+        event_id
+            ID of the event to get attendees for.
+
+        Returns
+        -------
+        List of ``pythonkc_meetups.types.MeetupMember``.
+
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
+        """
+        query = urllib.urlencode({'key': self._api_key,
+                                  'event_id': event_id})
+        url = '{0}?{1}'.format(RSVPS_URL, query)
+        data = self._http_get_json(url)
+        rsvps = data['results']
+        return [parse_member_from_rsvp(rsvp) for rsvp in rsvps]
 
     def _http_get_json(self, url):
         """

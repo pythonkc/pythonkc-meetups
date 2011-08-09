@@ -56,6 +56,26 @@ lat
 lon
     Geographical longitude.
 
+MeetupMember
+------------
+id
+    Meetup.com ID for the member.
+name
+    Full name (first & last) of the member.
+photo
+    A ``MeetupMemberPhoto`` containing URLs to this member's photo resources.
+
+MeetupMemberPhoto
+-----------------
+id
+    Meetup.com ID for the member photo.
+url
+    URL of the member photo resource.
+highres_url
+    URL of the high-resolution version of the member photo.
+thumb_url
+    URL of the thumbnail version of the member photo.
+
 """
 
 
@@ -69,3 +89,8 @@ MeetupEvent = namedtuple('MeetupEvent',
 MeetupVenue = namedtuple('MeetupVenue',
         ['id', 'name', 'address_1', 'address_2', 'address_3', 'city', 'state',
          'zip', 'country', 'lat', 'lon'])
+
+MeetupMember = namedtuple('MeetupMember', ['id', 'name', 'photo'])
+
+MeetupMemberPhoto = namedtuple('MeetupMemberPhoto', 
+        ['id', 'url', 'highres_url', 'thumb_url'])

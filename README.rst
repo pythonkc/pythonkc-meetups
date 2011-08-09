@@ -29,3 +29,8 @@ Example Usage
     u'Monthly Meetup: Google App Engine'
     >>> last_meetup.time
     datetime.datetime(2011, 7, 9, 14, 0, tzinfo=tzoffset(None, -18000))
+    >>> an_attendee = meetups.get_event_attendees(last_meetup.id)[0]
+    >>> an_attendee.name
+    u'Steven Cummings'
+    >>> an_attendee.photo.thumb_url
+    u'http://photos1.meetupstatic.com/photos/member/2/e/f/5/thumb_16212021.jpeg'
