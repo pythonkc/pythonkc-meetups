@@ -2,7 +2,7 @@ PythonKC Meetup.com API Client
 ==============================
 
 A clean, minimal client to the Meetup.com API for retrieving Meetup events for
-the [PythonKC group](http://www.meetup.com/pythonkc/).
+the `PythonKC group <http://www.meetup.com/pythonkc/>`_.
 
 Example Usage
 -------------
