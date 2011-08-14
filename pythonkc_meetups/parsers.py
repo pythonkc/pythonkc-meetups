@@ -15,7 +15,7 @@ from pythonkc_meetups.types import MeetupVenue
 import datetime
 
 
-def parse_event(data):
+def parse_event(data, attendees=None):
     """
     Parse a ``MeetupEvent`` from the given response data.
 
@@ -35,7 +35,8 @@ def parse_event(data):
         maybe_rsvp_count=data.get('maybe_rsvp_count', None),
         event_url=data.get('event_url', None),
         photo_url=data.get('photo_url', None),
-        venue=parse_venue(data.get('venue', None))
+        venue=parse_venue(data.get('venue', None)),
+        attendees=attendees
     )
 
 
