@@ -30,6 +30,8 @@ event_url
     URL of the Meetup event page.
 photo_url
     URL of the event photo.
+attendees
+    List of ``MeetupMember`` that attended this event if it was in the past.
 
 MeetupVenue
 -----------
@@ -84,7 +86,8 @@ from collections import namedtuple
 
 MeetupEvent = namedtuple('MeetupEvent',
         ['id', 'name', 'description', 'time', 'status', 'venue',
-         'yes_rsvp_count', 'maybe_rsvp_count', 'event_url', 'photo_url'])
+         'yes_rsvp_count', 'maybe_rsvp_count', 'event_url', 'photo_url',
+         'attendees'])
 
 MeetupVenue = namedtuple('MeetupVenue',
         ['id', 'name', 'address_1', 'address_2', 'address_3', 'city', 'state',

@@ -95,6 +95,10 @@ class PythonKCMeetups(object):
 
         """
 
+        def get_attendees(event):
+            return (self.get_event_attendees(event['id']) 
+                    if 'id' in event else None)
+
         query = urllib.urlencode({'key': self._api_key,
                                   'group_urlname': GROUP_URLNAME,
                                   'status': 'past',
@@ -102,7 +106,7 @@ class PythonKCMeetups(object):
         url = '{0}?{1}'.format(EVENTS_URL, query)
         data = self._http_get_json(url)
         events = data['results']
-        return [parse_event(event) for event in events]
+        return [parse_event(event, get_attendees(event)) for event in events]
 
     def get_event_attendees(self, event_id):
         """
