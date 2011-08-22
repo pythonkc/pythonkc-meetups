@@ -12,6 +12,7 @@ from pythonkc_meetups.exceptions import PythonKCMeetupsNotJson
 from pythonkc_meetups.exceptions import PythonKCMeetupsRateLimitExceeded
 from pythonkc_meetups.parsers import parse_event
 from pythonkc_meetups.parsers import parse_member_from_rsvp
+from pythonkc_meetups.parsers import parse_photo
 import httplib2
 import json
 import mimeparse
@@ -21,6 +22,7 @@ import urllib
 MEETUP_API_HOST = 'https://api.meetup.com'
 EVENTS_URL = MEETUP_API_HOST + '/2/events.json'
 RSVPS_URL = MEETUP_API_HOST + '/2/rsvps.json'
+PHOTOS_URL = MEETUP_API_HOST + '/2/photos.json'
 GROUP_URLNAME = 'pythonkc'
 
 
@@ -99,6 +101,10 @@ class PythonKCMeetups(object):
             return (self.get_event_attendees(event['id']) 
                     if 'id' in event else None)
 
+        def get_photos(event):
+            return (self.get_event_photos(event['id'])
+                    if 'id' in event else None)
+
         query = urllib.urlencode({'key': self._api_key,
                                   'group_urlname': GROUP_URLNAME,
                                   'status': 'past',
@@ -106,7 +112,8 @@ class PythonKCMeetups(object):
         url = '{0}?{1}'.format(EVENTS_URL, query)
         data = self._http_get_json(url)
         events = data['results']
-        return [parse_event(event, get_attendees(event)) for event in events]
+        return [parse_event(event, get_attendees(event), get_photos(event)) 
+                for event in events]
 
     def get_event_attendees(self, event_id):
         """
@@ -136,6 +143,35 @@ class PythonKCMeetups(object):
         data = self._http_get_json(url)
         rsvps = data['results']
         return [parse_member_from_rsvp(rsvp) for rsvp in rsvps]
+
+    def get_event_photos(self, event_id):
+        """
+        Get photos for the identified event.
+
+        Parameters
+        ----------
+        event_id
+            ID of the event to get photos for.
+
+        Returns
+        -------
+        List of ``pythonkc_meetups.types.MeetupPhoto``.
+
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
+        """
+        query = urllib.urlencode({'key': self._api_key,
+                                  'event_id': event_id})
+        url = '{0}?{1}'.format(PHOTOS_URL, query)
+        data = self._http_get_json(url)
+        photos = data['results']
+        return [parse_photo(photo) for photo in photos]
 
     def _http_get_json(self, url):
         """
