@@ -35,3 +35,4 @@ Example Usage
     >>> an_attendee.photo.thumb_url
     u'http://photos1.meetupstatic.com/photos/member/2/e/f/5/thumb_16212021.jpeg'
     >>> last_meetup.photos[0].url
+    u'http://photos1.meetupstatic.com/photos/event/1/7/0/d/600_47705901.jpeg'
