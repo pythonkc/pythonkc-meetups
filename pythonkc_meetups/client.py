@@ -13,9 +13,9 @@ from pythonkc_meetups.exceptions import PythonKCMeetupsRateLimitExceeded
 from pythonkc_meetups.parsers import parse_event
 from pythonkc_meetups.parsers import parse_member_from_rsvp
 from pythonkc_meetups.parsers import parse_photo
-import httplib2
 import json
 import mimeparse
+import requests
 import urllib
 
 
@@ -196,15 +196,15 @@ class PythonKCMeetups(object):
         * PythonKCMeetupsRateLimitExceeded
 
         """
-        response, content = self._http_get(url)
+        response = self._http_get(url)
 
-        content_type = response['content-type']
+        content_type = response.headers['content-type']
         parsed_mimetype = mimeparse.parse_mime_type(content_type)
         if parsed_mimetype[1] not in ('json', 'javascript'):
             raise PythonKCMeetupsNotJson(content_type)
 
         try:
-            return json.loads(content)
+            return json.loads(response.content)
         except ValueError as e:
             raise PythonKCMeetupsBadJson(e)
 
@@ -220,8 +220,7 @@ class PythonKCMeetups(object):
 
         Returns
         -------
-        A tuple of response, content, where response is a dictionary of
-        response metadata (headers), and content is the entity body returned.
+        An HTTP response, containing response headers and content.
 
         Exceptions
         ----------
@@ -231,21 +230,20 @@ class PythonKCMeetups(object):
 
         """
         for try_number in range(self._http_retries + 1):
-            client = httplib2.Http(timeout=self._http_timeout)
-            response, content = client.request(url, 'GET')
-            if response.status == 200:
-                return response, content
+            response = requests.get(url, timeout=self._http_timeout)
+            if response.status_code == 200:
+                return response
 
             if (try_number >= self._http_retries or
-                response.status not in (408, 500, 502, 503, 504)):
+                response.status_code not in (408, 500, 502, 503, 504)):
 
-                if response.status >= 500:
-                    raise PythonKCMeetupsMeetupDown(response, content)
-                if response.status == 400:
+                if response.status_code >= 500:
+                    raise PythonKCMeetupsMeetupDown(response, response.content)
+                if response.status_code == 400:
                     try:
                         data = json.loads(content)
                         if data.get('code', None) == 'limit':
                             raise PythonKCMeetupsRateLimitExceeded
                     except:  # Don't lose original error when JSON is bad
                         pass
-                raise PythonKCMeetupsBadResponse(response, content)
+                raise PythonKCMeetupsBadResponse(response, response.content)
