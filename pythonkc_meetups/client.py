@@ -142,7 +142,8 @@ class PythonKCMeetups(object):
         url = '{0}?{1}'.format(RSVPS_URL, query)
         data = self._http_get_json(url)
         rsvps = data['results']
-        return [parse_member_from_rsvp(rsvp) for rsvp in rsvps]
+        return [parse_member_from_rsvp(rsvp) for rsvp in rsvps
+                if rsvp['response'] != "no"]
 
     def get_event_photos(self, event_id):
         """
