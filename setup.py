@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='pythonkc-meetups',
-    version='0.0.5',
+    version='0.0.6',
     description='Provides PythonKC Meetup.com events.',
     license='MIT',
     url='https://github.com/pythonkc/pythonkc-meetups',
