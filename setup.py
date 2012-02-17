@@ -12,8 +12,8 @@ setup(
     license='MIT',
     url='https://github.com/pythonkc/pythonkc-meetups',
     packages=find_packages(),
-    install_requires=['distribute', 'requests>=0.7.5', 
-                      'mimeparse>=0.1.3', 'python-dateutil>=1.5,<2'],
+    install_requires=['distribute', 'requests==0.7.5', 
+                      'mimeparse==0.1.3', 'python-dateutil==1.5'],
     author='Steven Cummings',
     author_email='estebistec@gmail.com',
     classifiers=[
