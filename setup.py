@@ -7,12 +7,12 @@ from setuptools import setup
 
 setup(
     name='pythonkc-meetups',
-    version='0.0.6',
+    version='0.1.0',
     description='Provides PythonKC Meetup.com events.',
     license='MIT',
     url='https://github.com/pythonkc/pythonkc-meetups',
     packages=find_packages(),
-    install_requires=['distribute', 'requests==0.7.5', 
+    install_requires=['distribute', 'requests==0.7.5',
                       'mimeparse==0.1.3', 'python-dateutil==1.5'],
     author='Steven Cummings',
     author_email='estebistec@gmail.com',

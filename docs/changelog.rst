@@ -4,12 +4,19 @@ Changelog
 Releases
 --------
 
+* `Release 0.1.0 - February 17, 2013`_
 * `Release 0.0.6 - November 26, 2011`_
 * `Release 0.0.5 - November 6, 2011`_
 * `Release 0.0.4 - August 21, 2011`_
 * `Release 0.0.3 - August 13, 2011`_
 * `Release 0.0.2 - August 13, 2011`_
 * `Release 0.0.1 - August 7, 2011`_
+
+Release 0.1.0 - February 17, 2013
+---------------------------------
+
+* Add option to limit past events returned by get_past_events.
+* Added get_events_attendees and get_events_photos to retrieve that info for multiple events in one API request.
 
 Release 0.0.6 - November 26, 2011
 ---------------------------------

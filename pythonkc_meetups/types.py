@@ -87,15 +87,15 @@ from collections import namedtuple
 
 
 MeetupEvent = namedtuple('MeetupEvent',
-        ['id', 'name', 'description', 'time', 'status', 'venue',
-         'yes_rsvp_count', 'maybe_rsvp_count', 'event_url', 'photo_url',
-         'attendees', 'photos'])
+                         ['id', 'name', 'description', 'time', 'status',
+                          'venue', 'yes_rsvp_count', 'maybe_rsvp_count',
+                          'event_url', 'photo_url', 'attendees', 'photos'])
 
 MeetupVenue = namedtuple('MeetupVenue',
-        ['id', 'name', 'address_1', 'address_2', 'address_3', 'city', 'state',
-         'zip', 'country', 'lat', 'lon'])
+                         ['id', 'name', 'address_1', 'address_2', 'address_3',
+                          'city', 'state', 'zip', 'country', 'lat', 'lon'])
 
 MeetupMember = namedtuple('MeetupMember', ['id', 'name', 'photo'])
 
-MeetupPhoto = namedtuple('MeetupPhoto', 
-        ['id', 'url', 'highres_url', 'thumb_url'])
+MeetupPhoto = namedtuple('MeetupPhoto',
+                         ['id', 'url', 'highres_url', 'thumb_url'])

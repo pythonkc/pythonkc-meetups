@@ -33,7 +33,8 @@ class PythonKCMeetups(object):
 
     """
 
-    def __init__(self, api_key, http_timeout=1, http_retries=2):
+    def __init__(self, api_key, num_past_events=None, http_timeout=1,
+                 http_retries=2):
         """
         Create a new instance.
 
@@ -41,16 +42,20 @@ class PythonKCMeetups(object):
         ----------
         api_key
             The Meetup.com API consumer key to make requests with.
+        num_past_events
+            The max number of events retrieved by get_past_events. Defaults to
+            None (no limit).
         http_timeout
-            Time, in seconds, to give HTTP requests to complete.
+            Time, in seconds, to give HTTP requests to complete. Defaults to 1.
         http_retries
             The number of times to retry requests when it is appropriate to do
-            so.
+            so. Defaults to 2.
 
         """
         self._api_key = api_key
         self._http_timeout = http_timeout
         self._http_retries = http_retries
+        self._num_past_events = num_past_events
 
     def get_upcoming_events(self):
         """
@@ -98,22 +103,62 @@ class PythonKCMeetups(object):
         """
 
         def get_attendees(event):
-            return (self.get_event_attendees(event['id']) 
-                    if 'id' in event else None)
+            return [attendee for event_id, attendee in events_attendees
+                    if event_id == event['id']]
 
         def get_photos(event):
-            return (self.get_event_photos(event['id'])
-                    if 'id' in event else None)
+            return [photo for event_id, photo in events_photos
+                    if event_id == event['id']]
 
-        query = urllib.urlencode({'key': self._api_key,
-                                  'group_urlname': GROUP_URLNAME,
-                                  'status': 'past',
-                                  'desc': 'true'})
+        params = {'key': self._api_key,
+                  'group_urlname': GROUP_URLNAME,
+                  'status': 'past',
+                  'desc': 'true'}
+        if self._num_past_events:
+            params['page'] = str(self._num_past_events)
+        query = urllib.urlencode(params)
         url = '{0}?{1}'.format(EVENTS_URL, query)
         data = self._http_get_json(url)
+
         events = data['results']
-        return [parse_event(event, get_attendees(event), get_photos(event)) 
+        event_ids = [event['id'] for event in events]
+
+        events_attendees = self.get_events_attendees(event_ids)
+        events_photos = self.get_events_photos(event_ids)
+
+        return [parse_event(event, get_attendees(event), get_photos(event))
                 for event in events]
+
+    def get_events_attendees(self, event_ids):
+        """
+        Get the attendees of the identified events.
+
+        Parameters
+        ----------
+        event_ids
+            List of IDs of events to get attendees for.
+
+        Returns
+        -------
+        List of tuples of (event id, ``pythonkc_meetups.types.MeetupMember``).
+
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
+        """
+        query = urllib.urlencode({'key': self._api_key,
+                                  'event_id': ','.join(event_ids)})
+        url = '{0}?{1}'.format(RSVPS_URL, query)
+        data = self._http_get_json(url)
+        rsvps = data['results']
+        return [(rsvp['event']['id'], parse_member_from_rsvp(rsvp))
+                for rsvp in rsvps
+                if rsvp['response'] != "no"]
 
     def get_event_attendees(self, event_id):
         """
@@ -144,6 +189,36 @@ class PythonKCMeetups(object):
         rsvps = data['results']
         return [parse_member_from_rsvp(rsvp) for rsvp in rsvps
                 if rsvp['response'] != "no"]
+
+    def get_events_photos(self, event_ids):
+        """
+        Get photos for the identified events.
+
+        Parameters
+        ----------
+        event_ids
+            List of IDs of events to get photos for.
+
+        Returns
+        -------
+        List of tuples of (event id, ``pythonkc_meetups.types.MeetupPhoto``).
+
+        Exceptions
+        ----------
+        * PythonKCMeetupsBadJson
+        * PythonKCMeetupsBadResponse
+        * PythonKCMeetupsMeetupDown
+        * PythonKCMeetupsNotJson
+        * PythonKCMeetupsRateLimitExceeded
+
+        """
+        query = urllib.urlencode({'key': self._api_key,
+                                  'event_id': ','.join(event_ids)})
+        url = '{0}?{1}'.format(PHOTOS_URL, query)
+        data = self._http_get_json(url)
+        photos = data['results']
+        return [(photo['photo_album']['event_id'], parse_photo(photo))
+                for photo in photos]
 
     def get_event_photos(self, event_id):
         """
@@ -236,13 +311,13 @@ class PythonKCMeetups(object):
                 return response
 
             if (try_number >= self._http_retries or
-                response.status_code not in (408, 500, 502, 503, 504)):
+                    response.status_code not in (408, 500, 502, 503, 504)):
 
                 if response.status_code >= 500:
                     raise PythonKCMeetupsMeetupDown(response, response.content)
                 if response.status_code == 400:
                     try:
-                        data = json.loads(content)
+                        data = json.loads(response.content)
                         if data.get('code', None) == 'limit':
                             raise PythonKCMeetupsRateLimitExceeded
                     except:  # Don't lose original error when JSON is bad
