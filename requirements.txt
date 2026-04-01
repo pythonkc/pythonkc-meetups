@@ -1,3 +1,3 @@
-requests==2.32.4
+requests==2.33.0
 mimeparse==0.1.3
 python-dateutil==1.5
